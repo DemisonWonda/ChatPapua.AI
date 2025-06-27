@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatPapua.AI - Chatbot Kesehatan Bahasa Papua</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .chat-container {
+            height: 80vh;
+            background-image: url('images/bg.png'); /* Ganti path sesuai lokasi file gambar */
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .message {
+            max-width: 70%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1.5s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-indigo-800">ChatPapua.AI</h1>
+            <p class="text-gray-600">Chatbot Kesehatan Berbasis AI Bahasa Papua</p>
+            <div class="flex justify-center mt-4">
+                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+                    <i class="fas fa-wifi-slash mr-1"></i> Mode Offline
+                </span>
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    <i class="fas fa-language mr-1"></i> Bahasa Papua
+                </span>
+            </div>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden chat-container flex flex-col">
+            <!-- Chat Header -->
+            <div class="bg-indigo-700 text-white p-4 flex items-center">
+                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center mr-3">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold">Asisten Kesehatan Papua</h2>
+                    <p class="text-xs opacity-75">Siap membantu kesehatan Anda</p>
+                </div>
+                <div class="ml-auto">
+                    <button id="language-toggle" class="bg-indigo-600 hover:bg-indigo-800 text-white px-3 py-1 rounded-full text-sm flex items-center">
+                        <i class="fas fa-exchange-alt mr-1"></i> Ganti Bahasa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3">
+                <!-- Initial greeting message -->
+                <div class="message bg-indigo-100 text-gray-800 p-3 rounded-lg rounded-tl-none">
+                    <p>Yau! Nama sa Dokter Papua. Bisa bantu apa tentang kesehatan?</p>
+                    <p class="text-xs text-gray-500 mt-1">Hari ini: <span id="current-date"></span></p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t p-4 bg-gray-50">
+                <div id="typing-indicator" class="typing-indicator text-sm text-gray-500 mb-2 hidden">
+                    Dokter Papua sedang mengetik...
+                </div>
+                <div class="flex">
+                    <input id="user-input" type="text" placeholder="Tulis pesan Anda..." 
+                           class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button id="send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="flex justify-center mt-3 space-x-2">
+                    <button class="quick-btn bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-full text-sm" onclick="showFluInfo()">
+                        <i class="fas fa-head-side-cough mr-1"></i> Gejala Flu
+                    </button>
+                    <button class="quick-btn bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-full text-sm" onclick="showMedicineInfo()">
+                        <i class="fas fa-pills mr-1"></i> Obat Tradisional
+                    </button>
+                    <button class="quick-btn bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-full text-sm" onclick="showClinicInfo()">
+                        <i class="fas fa-hospital mr-1"></i> Puskesmas Terdekat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-indigo-600 text-2xl mb-3">
+                    <i class="fas fa-wifi-slash"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Mode Offline</h3>
+                <p class="text-gray-600">Tetap bisa digunakan tanpa koneksi internet, cocok untuk daerah terpencil di Papua.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-indigo-600 text-2xl mb-3">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Model Ringan</h3>
+                <p class="text-gray-600">Dibangun dengan model GPT-2 yang efisien, bisa berjalan di HP spesifikasi rendah.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="text-indigo-600 text-2xl mb-3">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Bahasa Papua</h3>
+                <p class="text-gray-600">Menggunakan bahasa Papua sehari-hari dengan sentuhan budaya lokal.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('id-ID', options);
+
+        // Chat functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const quickBtns = document.querySelectorAll('.quick-btn');
+        const languageToggle = document.getElementById('language-toggle');
+
+        let currentLanguage = 'papua'; // 'papua' or 'indonesia'
+
+        // Sample responses in Papua language and Indonesian
+        const responses = {
+            'greeting': {
+                'papua': 'Yau! Nama sa Dokter Papua. Bisa bantu apa tentang kesehatan?',
+                'indonesia': 'Halo! Saya Dokter Papua. Ada yang bisa saya bantu terkait kesehatan?'
+            },
+            'default': {
+                'papua': 'Sa tidak paham pertanyaan itu. Bisa tanya lain?',
+                'indonesia': 'Saya tidak mengerti pertanyaan itu. Bisakah Anda menanyakan hal lain?'
+            },
+            'flu': {
+                'papua': 'Kalau gejala flu, bisa minum air hangat banyak, istirahat, dan pakai obat tradisional seperti kunyit atau jahe.',
+                'indonesia': 'Untuk gejala flu, minumlah banyak air hangat, istirahat yang cukup, dan bisa menggunakan obat tradisional seperti kunyit atau jahe.'
+            },
+            'medicine': {
+                'papua': 'Obat tradisional Papua banyak, contoh: kulit manggis untuk demam, daun sirsak untuk sakit perut.',
+                'indonesia': 'Obat tradisional Papua banyak macamnya, misalnya kulit manggis untuk demam, daun sirsak untuk sakit perut.'
+            },
+            'clinic': {
+                'papua': 'Puskesmas terdekat ada di Jalan Papua No. 10, buka jam 8 pagi sampai 2 siang.',
+                'indonesia': 'Puskesmas terdekat berada di Jalan Papua No. 10, buka dari jam 8 pagi hingga 2 siang.'
+            }
+        };
+
+        // Add message to chat
+        function addMessage(text, isUser  = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser  ? 'ml-auto bg-indigo-600 text-white p-3 rounded-lg rounded-tr-none' : 'bg-indigo-100 text-gray-800 p-3 rounded-lg rounded-tl-none'}`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        // Get bot response
+        function getBotResponse(userMessage) {
+            userMessage = userMessage.toLowerCase();
+            
+            if (userMessage.includes('flu') || userMessage.includes('pilek')) {
+                return responses['flu'][currentLanguage];
+            } else if (userMessage.includes('obat') || userMessage.includes('medicine')) {
+                return responses['medicine'][currentLanguage];
+            } else if (userMessage.includes('puskesmas') || userMessage.includes('klinik')) {
+                return responses['clinic'][currentLanguage];
+            } else if (userMessage.includes('halo') || userMessage.includes('hai')) {
+                return responses['greeting'][currentLanguage];
+            } else {
+                return responses['default'][currentLanguage];
+            }
+        }
+
+        // Send message
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+            
+            addMessage(message, true);
+            userInput.value = '';
+            
+            showTyping();
+            
+            // Simulate bot thinking time
+            setTimeout(() => {
+                hideTyping();
+                const botResponse = getBotResponse(message);
+                addMessage(botResponse);
+            }, 1000 + Math.random() * 2000);
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Quick buttons
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.textContent.trim();
+                addMessage(text, true);
+                
+                showTyping();
+                
+                setTimeout(() => {
+                    hideTyping();
+                    let responseKey;
+                    if (text.includes('Flu')) responseKey = 'flu';
+                    else if (text.includes('Obat')) responseKey = 'medicine';
+                    else if (text.includes('Puskesmas')) responseKey = 'clinic';
+                    
+                    const botResponse = responses[responseKey][currentLanguage];
+                    addMessage(botResponse);
+                }, 1000);
+            });
+        });
+
+        // Language toggle
+        languageToggle.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'papua' ? 'indonesia' : 'papua';
+            const languageName = currentLanguage === 'papua' ? 'Bahasa Papua' : 'Bahasa Indonesia';
+            
+            // Update button text
+            languageToggle.innerHTML = `<i class="fas fa-exchange-alt mr-1"></i> ${languageName}`;
+            
+            // Send language change notification
+            addMessage(`Bahasa diubah ke ${languageName}`, true);
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addMessage(responses['greeting'][currentLanguage]);
+            }, 1000);
+        });
+
+        // Show Flu Info
+        function showFluInfo() {
+            addMessage('Gejala flu meliputi demam, batuk, pilek, dan sakit kepala. Pastikan untuk minum banyak air dan istirahat.', true);
+        }
+
+        // Show Medicine Info
+        function showMedicineInfo() {
+            addMessage('Obat tradisional yang bisa digunakan antara lain: jahe, kunyit, dan daun sirsak.', true);
+        }
+
+        // Show Clinic Info
+        function showClinicInfo() {
+            addMessage('Puskesmas terdekat ada di Jalan Papua No. 10, buka dari jam 8 pagi sampai 2 siang.', true);
+        }
+    </script>
+</body>
+</html>
